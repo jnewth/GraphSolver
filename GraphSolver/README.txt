@@ -1,3 +1,26 @@
+0.0.4 4/23/12
+J. Newth
+
+Features:
+We figured out our first push/pull using github!
+Added BFSSolver to project.
+AStar implemented, stepping, tested, and working.
+AStar modified to find later elements in list (push_front vs push_back)
+and performance noticeably improved.
+
+Bugs:
+BFSSolver computes a wildly high number
+BFSSolver doesnt step
+BFSSolver doesnt render open list
+
+Need to add "tail" rendering to drawing of open lists.
+
+Added manual stepping to rendering. Probably want a setup flag to choose
+which type of solver, what type of maze, what type of solving (instant, step, animate, and rate)
+
+
+
+
 0.0.3 4/22/12
 J Newth
 

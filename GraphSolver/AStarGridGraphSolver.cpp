@@ -12,8 +12,8 @@
 
 AStarGridGraphSolver::AStarGridGraphSolver(const GridGraphSolverCInfoT& info) {
 	init(info);
-	PathNodeT *p = new PathNodeT(NULL, m_start, 0, computeManhattanEstimate(m_start)); //generally H is cost of parent node + 1
-	m_openList.push_back(p);
+	PathNodeT *p = new PathNodeT(NULL, m_start, 0, computeHeuristicDistance(m_start)); //generally H is cost of parent node + 1
+	m_openList.push_front(p);
 	incrementStepCount();
 }
 
@@ -31,10 +31,13 @@ AStarGridGraphSolver::~AStarGridGraphSolver() {
 	m_closedList.clear();
 }
 
-int AStarGridGraphSolver::computeManhattanEstimate(GridNode *node) {
+float AStarGridGraphSolver::computeHeuristicDistance(GridNode *node) {
 	assert(node != NULL);
 	//H = heuristic = we use Manhattan (technically inadmissible)
-	int H = abs(node->getRow() - m_finish->getRow()) + abs(node->getCol() - m_finish->getCol());
+	float y = abs(node->getRow() - m_finish->getRow());
+	float x = abs(node->getCol() - m_finish->getCol());
+	float H = (float) (x+y); //this is manhattan estimate
+	//float H =  sqrtf(x*x+y*y); //this is straight line estimate
 	return H;
 }
 
@@ -65,7 +68,7 @@ GridGraphSolver::SolveStateT AStarGridGraphSolver::step() {
 		}
 		PathNodeT *p = popBestNode();
 		incrementStepCount(); //every time we pop
-		m_closedList.push_back(p); //always pop best and add to closed list
+		m_closedList.push_front(p); //always pop best and add to closed list
 		if (p->m_node == m_finish) { //if it's the final, we are done
 			m_state = SOLVED;
 			computePath(p);
@@ -96,8 +99,8 @@ void AStarGridGraphSolver::addToOpenList(PathNodeT *parent, GridNode *node) {
 				}
 			}
 			else {
-				PathNodeT *child = new PathNodeT(parent, node, parent->m_G+1, computeManhattanEstimate(node)); //set parent
-				m_openList.push_back(child);
+				PathNodeT *child = new PathNodeT(parent, node, parent->m_G+1, computeHeuristicDistance(node));
+				m_openList.push_front(child);
 			}
 		}
 	}
@@ -179,7 +182,7 @@ void AStarGridGraphSolver::renderOpenAndClosedLists() {
 }
 
 void AStarGridGraphSolver::drawListNode(PathNodeT *p) {
-	drawCircle(p->m_node->getCol(),p->m_node->getRow(), m_cellWidth/6);
+	drawCircle(p->m_node->getCol(),p->m_node->getRow(), m_cellWidth/8);
 
 	//draw tail
 

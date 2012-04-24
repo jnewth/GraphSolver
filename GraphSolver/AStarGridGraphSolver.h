@@ -25,9 +25,10 @@ protected:
 	typedef struct PathNodeT {
 		PathNodeT *m_parent; //starts at 0, when = NUM_DIRS, the node can be popped
 		GridNode *m_node;
-		int m_H, m_G; //represents F=H+G, where H = heuristic, G = path cost
-		PathNodeT(PathNodeT *parent, GridNode *n, int cost, int guess) : m_parent(parent), m_node(n), m_H(guess), m_G(cost) {}
-		int getScore() { return m_G+m_H; }
+		int m_G; //represents F=H+G, where H = heuristic, G = path cost
+		float m_H;
+		PathNodeT(PathNodeT *parent, GridNode *n, int cost, float guess) : m_parent(parent), m_node(n), m_G(cost), m_H(guess) {}
+		float getScore() { return m_G+m_H; }
 	} PathNodeT;
 
 	std::list<PathNodeT *> m_openList; //I know this could be a priority queue
@@ -37,7 +38,7 @@ protected:
 	std::vector<PathNodeT *> m_path;
 
 
-	int computeManhattanEstimate(GridNode *node);
+	float computeHeuristicDistance(GridNode *node);
 	PathNodeT* popBestNode();
 
 	void addToOpenList(PathNodeT *parent, GridNode *child);

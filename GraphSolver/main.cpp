@@ -25,11 +25,12 @@ static GridGraph *gGraph;
 static GridGraphRenderer *gRenderer;
 static GridGraphSolver *gSolver;
 static bool gDone;
+static bool gStep =false;
 static int gRasterTextPosX = 0;
 static int gRasterTextPosY = 0;
 static const char *gSolverStringDescription;
 
-static const int STEP_FRAME_COUNT = 60;
+static const int STEP_FRAME_COUNT = 45;
 static void tidyObjects() {
 	if (gGraph) {
 		delete gGraph;
@@ -131,14 +132,19 @@ static void init(const char *fname)
 
 static void update() {
 	static int updateCounter = STEP_FRAME_COUNT;
-	if (!updateCounter--) {
+//	if (!updateCounter--) {
+//		gSolver->step();
+//		updateCounter = STEP_FRAME_COUNT;
+//	}
+
+	//or use manual stepping
+	if (gStep) {
 		gSolver->step();
-		updateCounter = STEP_FRAME_COUNT;
+		gStep=false;
 	}
 }
 
 static void drawStats() {
-
 	int lineDelta = 15;
 	const char *cStr = gSolverStringDescription;
 
@@ -172,6 +178,9 @@ static void drawGL ()
 static void handleKey(SDLKey key) {
 	if (key == SDLK_ESCAPE) {
 		gDone = true;
+	}
+	if (key == SDLK_s) {
+		gStep = true;
 	}
 }
 

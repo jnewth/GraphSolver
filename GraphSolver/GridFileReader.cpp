@@ -15,7 +15,7 @@ GridGraph* GridFileReader::parseFile(const char *fname) {
     
     //	return simple4();
     //	return snigdha10();
-    return testAStar();
+   return testAStar();
     //return maze10();
 }
 
