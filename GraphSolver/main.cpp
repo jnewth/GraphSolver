@@ -107,7 +107,7 @@ static void init(const char *fname)
 	gSolver = new DFSGridGraphSolver(solverInfo);
 	gSolverType = "Depth-First";
 	//gSolverType = "Breadth-First";
-	//gSolverType = "A*-star";
+	//gSolverType = "A*";
 
 	GridGraphRenderer::GridGraphRendererCInfoT renderInfo;
 	renderInfo.graph = gGraph;
