@@ -14,6 +14,7 @@
 #include "GridGraphRenderer.h"
 #include "GridGraphSolver.h"
 #include "DFSGridGraphSolver.h"
+#include "BFSGridGraphSolver.h"
 
 static SDL_Surface *gScreen;
 
@@ -104,10 +105,11 @@ static void init(const char *fname)
 	solverInfo.xOrigin = 10; //and tell it where it's upper left corner is
 	solverInfo.yOrigin = 10;
 
-	gSolver = new DFSGridGraphSolver(solverInfo);
-	gSolverType = "Depth-First";
-	//gSolverType = "Breadth-First";
-	//gSolverType = "A*";
+	//gSolver = new DFSGridGraphSolver(solverInfo);
+	gSolver = new BFSGridGraphSolver(solverInfo);
+    //gSolverType = "Depth-First";
+	gSolverType = "Breadth-First";
+	//gSolverType = "A*-star";
 
 	GridGraphRenderer::GridGraphRendererCInfoT renderInfo;
 	renderInfo.graph = gGraph;
@@ -121,7 +123,7 @@ static void init(const char *fname)
 	gRasterTextPosY = 10;
 
 	//debugging only
-	//gSolver->solve();
+	gSolver->solve();
 }
 
 static void update() {
