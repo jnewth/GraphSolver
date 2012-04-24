@@ -8,45 +8,74 @@
 #include "AStarGridGraphSolver.h"
 #include <math.h>
 #include <assert.h>
+#include <gl.h>
 
 AStarGridGraphSolver::AStarGridGraphSolver(const GridGraphSolverCInfoT& info) {
 	init(info);
-	PathNodeT *p = new PathNodeT(NULL, m_start, computeScore(m_start, 0)); //generally H is cost of parent node + 1
-	m_openList.push(p);
+	PathNodeT *p = new PathNodeT(NULL, m_start, 0, computeManhattanEstimate(m_start)); //generally H is cost of parent node + 1
+	m_openList.push_back(p);
 	incrementStepCount();
 }
 
 AStarGridGraphSolver::~AStarGridGraphSolver() {
 	//clean up anything in either open or closed lists
+	std::list<PathNodeT *>::iterator iter;
+	for (iter = m_openList.begin(); iter != m_openList.end(); iter++) {
+		delete *iter;
+	}
+	m_openList.clear();
+
+	for (iter = m_closedList.begin(); iter != m_closedList.end(); iter++) {
+		delete *iter;
+	}
+	m_closedList.clear();
 }
 
-
-int AStarGridGraphSolver::computeScore(GridNode *node, int costOfParent) {
+int AStarGridGraphSolver::computeManhattanEstimate(GridNode *node) {
 	assert(node != NULL);
-	//score = G + H
-	//G = cost so far + step cost = cost to get to the preceding node + 1
-	int G = costOfParent+1;
-	//H = heuristic = we use Hamilton (technically inadmissible)
+	//H = heuristic = we use Manhattan (technically inadmissible)
 	int H = abs(node->getRow() - m_finish->getRow()) + abs(node->getCol() - m_finish->getCol());
-	return (G+H);
+	return H;
+}
+
+//just iterate through the list finding the best (lowest score node)
+AStarGridGraphSolver::PathNodeT* AStarGridGraphSolver::popBestNode() {
+
+	if (m_openList.size() == 0 ) { return NULL; }
+
+	std::list<PathNodeT*>::iterator iter;
+	std::list<PathNodeT*>::iterator best;
+	int bestScore = INT32_MAX;
+	for (iter = m_openList.begin(); iter != m_openList.end(); iter++) {
+		if ((*iter)->getScore() < bestScore) {
+			bestScore = (*iter)->getScore();
+			best = iter;
+		}
+	}
+	PathNodeT *bestPathNode = *best;
+	m_openList.erase(best); //we are popping the best from our open list
+	return bestPathNode;
 }
 
 GridGraphSolver::SolveStateT AStarGridGraphSolver::step() {
 	if (m_state == STEPPING) {
 		if (m_openList.size() == 0) {
 			m_state = UNSOLVED;
+			return m_state;
 		}
-		PathNodeT *p = m_openList.top(); //get the best score in the list
-		m_openList.pop(); //removes top element from queue
-		if (p->m_node == m_finish) {
+		PathNodeT *p = popBestNode();
+		incrementStepCount(); //every time we pop
+		m_closedList.push_back(p); //always pop best and add to closed list
+		if (p->m_node == m_finish) { //if it's the final, we are done
 			m_state = SOLVED;
-			m_closedList.push_back(p);
 			computePath(p);
 		}
 		else {
 			for (int dir = 0; dir < GridNode::NUM_DIRS; dir++) { //add children to node
-				GridNode *childNode = p->m_node->getNeighbor(dir);
-				addToOpenList(p, childNode);
+				if (p->m_node->containsEdge(dir)) {
+					GridNode *childNode = p->m_node->getNeighbor(dir);
+					addToOpenList(p, childNode);
+				}
 			}
 		}
 	}
@@ -58,33 +87,49 @@ void AStarGridGraphSolver::addToOpenList(PathNodeT *parent, GridNode *node) {
 	//if child is on closed list, ignore
 	//if child is already in open list, update its score, possibly updating parent
 	if (node) {
-		if (!isOnClosedList(node)) {
-			PathNodeT *child = new PathNodeT(p, node, computeScore(child, parent->m_score)); //set parent
-			updateScoreAndAdd(child);
+		if (!isOnClosedList(node)) { //we ignore if they are on the closed list already
+			PathNodeT *nodeOnList = findOnList(m_openList, node);
+			if (nodeOnList) { //they are already on the open list, so update their score if necessary
+				if (parent->m_G + 1 < nodeOnList->m_G) {
+					nodeOnList->m_parent = parent; //better parent
+					nodeOnList->m_G = parent->m_G + 1; //revised better score
+				}
+			}
+			else {
+				PathNodeT *child = new PathNodeT(parent, node, parent->m_G+1, computeManhattanEstimate(node)); //set parent
+				m_openList.push_back(child);
+			}
 		}
 	}
 }
 
 bool AStarGridGraphSolver::isOnClosedList(GridNode *node) {
-	//iterate through closed list
-	std::vector<PathNodeT *>::iterator iter;
-	for (iter = m_closedList.begin(); iter != m_closedList.end(); iter++) {
-		if (iter->m_node == node) { return true; }
+	PathNodeT *p = findOnList(m_closedList, node);
+	return (p != NULL);
+}
+
+
+AStarGridGraphSolver::PathNodeT* AStarGridGraphSolver::findOnList(const std::list<PathNodeT *>& myList, GridNode *node) {
+	std::list<PathNodeT *>::const_iterator iter;
+	for (iter = myList.begin(); iter != myList.end(); ++iter) {
+		if ((*iter)->m_node == node) {
+			return *iter;
+		}
 	}
-	return false;
+	return NULL;
 }
 
 void AStarGridGraphSolver::computePath(PathNodeT *path) {
 	assert(m_state == SOLVED);
 	//We can draw
-	while (path->m_node != NULL) {
-		m_path.push_back(path->m_node);
+	while (path != NULL) {
+		m_path.push_back(path);
 		path = path->m_parent;
 	}
 }
 
 GridGraphSolver::SolveStateT AStarGridGraphSolver::solve() {
-	while(step() == STEPPING);
+	while(STEPPING == step());
 	return m_state;
 }
 
@@ -92,21 +137,21 @@ void AStarGridGraphSolver::render() {
 	//open list iterator
 
 	//draw open list as gray circle-with-tale
-	renderOpenList();
+	renderOpenAndClosedLists();
 
 	//draw path
+	if (m_state == SOLVED)
 	{
 		glColor3f(0, 1, 0); //pure green
-		std::vector<GridNode *>::iterator iter;
-		GridNode* from = m_start;
+		std::vector<PathNodeT *>::iterator iter;
+		PathNodeT* from = *m_path.begin();
 		for (iter = m_path.begin(); iter != m_path.end(); iter++) {
-			drawPathSegment(from, (*iter));
+			drawPathSegment(from->m_node, (*iter)->m_node);
 			from = (*iter);
 		}
-
-		renderStart();
-		renderFinish();
 	}
+	renderStart();
+	renderFinish();
 }
 
 void AStarGridGraphSolver::drawPathSegment(GridNode *from, GridNode *to) {
@@ -117,44 +162,39 @@ void AStarGridGraphSolver::drawPathSegment(GridNode *from, GridNode *to) {
 	glEnd();
 }
 
-void AStarGridGraphSolver::renderOpenList() {
-	//this is actually an annoying problem
-	//the open list is an STL queue, which doesnt support iterating.
-	//have to do something either expensive (like switching to vector)
-	//or computational (like writing my own)
-	//or terrible like popping everything, drawing it, and readding it later
-	//do the terrible thing for now
-	std::vector<PathNodeT *> tempStorage;
-	//draw, then pop
-	while (m_openList.size()) {
-		PathNodeT *p = m_openList.top();
-		m_openList.pop();
-		tempStorage.push_back(p);
-		drawOpenNode(p);
-	}
-	//then push back in to openlist
-	std::vector<PathNodeT *>::iterator iter;
-	for (iter= tempStorage.begin(); iter != tempStorage.end(); iter++) {
-		m_openList.push(*iter); //push contents back in to open list
+void AStarGridGraphSolver::renderOpenAndClosedLists() {
+	std::list<PathNodeT *>::iterator iter;
+
+
+	glColor3f(0.5f,0.5f,0.5f);
+	for (iter = m_closedList.begin(); iter != m_closedList.end(); iter++) {
+		drawListNode(*iter);
 	}
 
+	glColor3f(0.25f,0.75f,0.75f);
+	for (iter = m_openList.begin(); iter != m_openList.end(); iter++) {
+		drawListNode(*iter);
+		//drawTail(*iter);
+	}
 }
 
-void AStarGridGraphSolver::drawOpenNode(PathNodeT *p) {
-	glColor3f(0.5f,0.5f,0.5f);
+void AStarGridGraphSolver::drawListNode(PathNodeT *p) {
 	drawCircle(p->m_node->getRow(),p->m_node->getCol(), m_cellWidth/6);
+
 	//draw tail
-	int deltaX = p->m_parent->getCol() - p->m_node->getCol();
-	int deltaY = p->m_parent->getRow() - p->m_node->getRow();
 
-	//center of circle, then offset to edge of circle
-	int x = (m_x+ p->m_node->getCol()*m_cellWidth + m_offsetX) + deltaX*(m_cellWidth/6);
-	int y = (m_y+ p->m_node->getRow()*m_cellHeight + m_offsetY) + deltaY*(m_cellWidth/6);
-
-	glBegin(GL_LINES);
-	glVertex2f(x , y ); //starts line on edge of circle
-	x += deltaX*(m_cellWidth/6);
-	y += deltaY*(m_cellWidth/6);
-	glVertex2f(x , y ); //starts line on edge of circle
-	glEnd();
+//	int deltaX = p->m_parent->m_node->getCol() - p->m_node->getCol();
+//	int deltaY = p->m_parent->m_node->getRow() - p->m_node->getRow();
+//
+//	//center of circle, then offset to edge of circle
+//	int x = (m_x+ p->m_node->getCol()*m_cellWidth + m_offsetX) + deltaX*(m_cellWidth/6);
+//	int y = (m_y+ p->m_node->getRow()*m_cellHeight + m_offsetY) + deltaY*(m_cellWidth/6);
+//
+//	glBegin(GL_LINES);
+//	glVertex2f(x , y ); //starts line on edge of circle
+//	x += deltaX*(m_cellWidth/6);
+//	y += deltaY*(m_cellWidth/6);
+//	glVertex2f(x , y ); //starts line on edge of circle
+//	glEnd();
+	//}
 }

@@ -17,6 +17,7 @@ BFSGridGraphSolver::BFSGridGraphSolver(const GridGraphSolverCInfoT& info) {
 	m_start->setStatus("waiting");
 	PathNodeT p(m_start);
 	m_list_path.push_back(p);
+	incrementStepCount();
 }
 
 GridGraphSolver::SolveStateT BFSGridGraphSolver::step() {
@@ -49,6 +50,7 @@ GridGraphSolver::SolveStateT BFSGridGraphSolver::solve() {
 						next.node->setParent(current.node);
 						current.node->setChildCount(current.node->getChildCount()+1);
 						m_temp_path.push_back(next);
+						incrementStepCount();
 					}
 				}
 				m_list_path.insert(m_list_path.end(), m_temp_path.begin(), m_temp_path.end());
@@ -111,17 +113,6 @@ void BFSGridGraphSolver::render() {
 	//draw end
 	glColor3f(0,0,1);
 	drawCircle(m_finish->getCol(), m_finish->getRow(), m_cellWidth/4);
-}
-
-void BFSGridGraphSolver::drawCircle(int x, int y, int radius) {
-	glBegin(GL_LINE_LOOP);
-	double dtor = 3.1415 / 180;
-	int angle = 0;
-	for (angle = 0; angle <= 360; angle++) {
-		glVertex2f(m_x+ x*m_cellWidth + m_offsetX+sin(dtor * angle) * ((double) radius),
-				m_y+ y*m_cellHeight + m_offsetY + cos(dtor * angle) * ((double) radius));
-	}
-	glEnd();
 }
 
 void BFSGridGraphSolver::drawPathSegment(GridNode *from, GridNode *to) {

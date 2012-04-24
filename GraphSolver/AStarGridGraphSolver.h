@@ -9,7 +9,7 @@
 #define ASTARGRIDGRAPHSOLVER_H_
 
 #include "GridGraphSolver.h"
-#include <queue>
+#include <list>
 
 class AStarGridGraphSolver: public GridGraphSolver {
 public:
@@ -23,30 +23,31 @@ protected:
 
 	//My path node type
 	typedef struct PathNodeT {
-		GridNode *m_parent; //starts at 0, when = NUM_DIRS, the node can be popped
+		PathNodeT *m_parent; //starts at 0, when = NUM_DIRS, the node can be popped
 		GridNode *m_node;
-		int m_score; //represents F=H+G
-		PathNodeT(GridNode *parent, GridNode *n, int score) : m_parent(parent), m_node(n), m_score(score) {}
-		const bool operator<(const PathNodeT& other) const { return (m_score > other.m_score);} //we are using a cost function
+		int m_H, m_G; //represents F=H+G, where H = heuristic, G = path cost
+		PathNodeT(PathNodeT *parent, GridNode *n, int cost, int guess) : m_parent(parent), m_node(n), m_H(guess), m_G(cost) {}
+		int getScore() { return m_G+m_H; }
 	} PathNodeT;
 
-	std::priority_queue< PathNodeT *> m_openList;
-	std::vector<PathNodeT *> m_closedList;
+	std::list<PathNodeT *> m_openList; //I know this could be a priority queue
+	std::list<PathNodeT *> m_closedList;
 
 	//just for graphing solution
-	std::vector<GridNode *> m_path;
+	std::vector<PathNodeT *> m_path;
 
 
-	int computeScore(GridNode *node, int costOfParent);
+	int computeManhattanEstimate(GridNode *node);
+	PathNodeT* popBestNode();
+
 	void addToOpenList(PathNodeT *parent, GridNode *child);
 	void computePath(PathNodeT *path);
 	bool isOnClosedList(GridNode *node);
-
+	PathNodeT* findOnList(const std::list<PathNodeT *>& list, GridNode *node);
 
 	void drawPathSegment(GridNode *from, GridNode *to);
-	void renderOpenList();
-	void drawOpenNode(PathNodeT *p);
-
+	void renderOpenAndClosedLists();
+	void drawListNode(PathNodeT *p);
 };
 
 #endif /* ASTARGRIDGRAPHSOLVER_H_ */

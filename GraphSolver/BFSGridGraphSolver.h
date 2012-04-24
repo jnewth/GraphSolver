@@ -25,7 +25,7 @@ public:
 
 protected:
 	void drawPathSegment(GridNode *from, GridNode *to);
-	void drawCircle(int x, int y, int radius);
+	//void drawCircle(int x, int y, int radius);
 
 	typedef struct PathNodeT {
 		int nextSearchEdge;

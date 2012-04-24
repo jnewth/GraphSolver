@@ -15,6 +15,7 @@
 #include "GridGraphSolver.h"
 #include "DFSGridGraphSolver.h"
 #include "BFSGridGraphSolver.h"
+#include "AStarGridGraphSolver.h"
 
 static SDL_Surface *gScreen;
 
@@ -26,8 +27,9 @@ static GridGraphSolver *gSolver;
 static bool gDone;
 static int gRasterTextPosX = 0;
 static int gRasterTextPosY = 0;
-static const char *gSolverType;
+static const char *gSolverStringDescription;
 
+static const int STEP_FRAME_COUNT = 60;
 static void tidyObjects() {
 	if (gGraph) {
 		delete gGraph;
@@ -98,7 +100,7 @@ static void init(const char *fname)
 	gGraph = GridFileReader::parseFile(fname);
 	GridGraphSolverCInfoT solverInfo;
 	solverInfo.graph = gGraph;
-	solverInfo.from = &gGraph->getNode(0,0); //2,1
+	solverInfo.from = &gGraph->getNode(2,1);
 	solverInfo.to = &gGraph->getNode(2,5);
 	solverInfo.width = 550; //tell renderer its working area
 	solverInfo.height = 380;
@@ -106,10 +108,11 @@ static void init(const char *fname)
 	solverInfo.yOrigin = 10;
 
 	//gSolver = new DFSGridGraphSolver(solverInfo);
-	gSolver = new BFSGridGraphSolver(solverInfo);
-    //gSolverType = "Depth-First";
-	gSolverType = "Breadth-First";
-	//gSolverType = "A*-star";
+	//gSolver = new BFSGridGraphSolver(solverInfo);
+	gSolver = new AStarGridGraphSolver(solverInfo);
+	//gSolverStringDescription = "Depth-First";
+	//gSolverStringDescription = "Breadth-First";
+	gSolverStringDescription = "A*-star";
 
 	GridGraphRenderer::GridGraphRendererCInfoT renderInfo;
 	renderInfo.graph = gGraph;
@@ -123,21 +126,21 @@ static void init(const char *fname)
 	gRasterTextPosY = 10;
 
 	//debugging only
-	gSolver->solve();
+	//gSolver->solve();
 }
 
 static void update() {
-	static int updateCounter = 5;
+	static int updateCounter = STEP_FRAME_COUNT;
 	if (!updateCounter--) {
 		gSolver->step();
-		updateCounter = 5;
+		updateCounter = STEP_FRAME_COUNT;
 	}
 }
 
 static void drawStats() {
 
 	int lineDelta = 15;
-	const char *cStr = gSolverType;
+	const char *cStr = gSolverStringDescription;
 
 	glRasterPos2f(gRasterTextPosX, gRasterTextPosY);
 	while(*cStr) {
