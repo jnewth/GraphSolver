@@ -24,13 +24,12 @@ void GridNode::setIndex(int row, int col) {
 
 inline
 int GridNode::opposite(int dir) {
-	int opposite = NORTH;
+	int opposite = dir;
 	switch (dir) {
-	case NORTH: return SOUTH;
-	case EAST: return WEST;
-	case WEST: return EAST;
-	case SOUTH: return NORTH;
-	default: return dir;
+	case NORTH: opposite = SOUTH; break;
+	case EAST:  opposite = WEST; break;
+	case WEST:  opposite = EAST; break;
+	case SOUTH: opposite = NORTH; break;
 	}
 	return opposite;
 }

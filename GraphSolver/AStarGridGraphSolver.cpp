@@ -179,7 +179,7 @@ void AStarGridGraphSolver::renderOpenAndClosedLists() {
 }
 
 void AStarGridGraphSolver::drawListNode(PathNodeT *p) {
-	drawCircle(p->m_node->getRow(),p->m_node->getCol(), m_cellWidth/6);
+	drawCircle(p->m_node->getCol(),p->m_node->getRow(), m_cellWidth/6);
 
 	//draw tail
 
