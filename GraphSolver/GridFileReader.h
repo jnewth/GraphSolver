@@ -12,7 +12,10 @@
 
 class GridFileReader {
 public:
+	typedef enum {SIMPLE, MAZE10, SNIGDHA10, ASTARTEST};
 	static GridGraph* parseFile(const char *fname);
+	static GridGraph* getMaze(int maze);
+
 private:
 	static GridGraph* snigdha10();
 	static GridGraph* simple4();

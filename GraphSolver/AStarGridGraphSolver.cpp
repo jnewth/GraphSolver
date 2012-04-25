@@ -12,7 +12,8 @@
 
 AStarGridGraphSolver::AStarGridGraphSolver(const GridGraphSolverCInfoT& info) {
 	init(info);
-	PathNodeT *p = new PathNodeT(NULL, m_start, 0, computeHeuristicDistance(m_start)); //generally H is cost of parent node + 1
+	PathNodeT *p = new PathNodeT(NULL, m_start, 0,
+			computeHeuristicDistance(m_start)); //generally H is cost of parent node + 1
 	m_openList.push_front(p);
 	incrementStepCount();
 }
@@ -36,7 +37,7 @@ float AStarGridGraphSolver::computeHeuristicDistance(GridNode *node) {
 	//H = heuristic = we use Manhattan (technically inadmissible)
 	float y = abs(node->getRow() - m_finish->getRow());
 	float x = abs(node->getCol() - m_finish->getCol());
-	float H = (float) (x+y); //this is manhattan estimate
+	float H = (float) (x + y); //this is manhattan estimate
 	//float H =  sqrtf(x*x+y*y); //this is straight line estimate
 	return H;
 }
@@ -44,7 +45,9 @@ float AStarGridGraphSolver::computeHeuristicDistance(GridNode *node) {
 //just iterate through the list finding the best (lowest score node)
 AStarGridGraphSolver::PathNodeT* AStarGridGraphSolver::popBestNode() {
 
-	if (m_openList.size() == 0 ) { return NULL; }
+	if (m_openList.size() == 0) {
+		return NULL;
+	}
 
 	std::list<PathNodeT*>::iterator iter;
 	std::list<PathNodeT*>::iterator best;
@@ -72,8 +75,7 @@ GridGraphSolver::SolveStateT AStarGridGraphSolver::step() {
 		if (p->m_node == m_finish) { //if it's the final, we are done
 			m_state = SOLVED;
 			computePath(p);
-		}
-		else {
+		} else {
 			for (int dir = 0; dir < GridNode::NUM_DIRS; dir++) { //add children to node
 				if (p->m_node->containsEdge(dir)) {
 					GridNode *childNode = p->m_node->getNeighbor(dir);
@@ -84,7 +86,6 @@ GridGraphSolver::SolveStateT AStarGridGraphSolver::step() {
 	}
 	return m_state;
 }
-
 
 void AStarGridGraphSolver::addToOpenList(PathNodeT *parent, GridNode *node) {
 	//if child is on closed list, ignore
@@ -97,9 +98,9 @@ void AStarGridGraphSolver::addToOpenList(PathNodeT *parent, GridNode *node) {
 					nodeOnList->m_parent = parent; //better parent
 					nodeOnList->m_G = parent->m_G + 1; //revised better score
 				}
-			}
-			else {
-				PathNodeT *child = new PathNodeT(parent, node, parent->m_G+1, computeHeuristicDistance(node));
+			} else {
+				PathNodeT *child = new PathNodeT(parent, node, parent->m_G + 1,
+						computeHeuristicDistance(node));
 				m_openList.push_front(child);
 			}
 		}
@@ -111,8 +112,8 @@ bool AStarGridGraphSolver::isOnClosedList(GridNode *node) {
 	return (p != NULL);
 }
 
-
-AStarGridGraphSolver::PathNodeT* AStarGridGraphSolver::findOnList(const std::list<PathNodeT *>& myList, GridNode *node) {
+AStarGridGraphSolver::PathNodeT* AStarGridGraphSolver::findOnList(
+		const std::list<PathNodeT *>& myList, GridNode *node) {
 	std::list<PathNodeT *>::const_iterator iter;
 	for (iter = myList.begin(); iter != myList.end(); ++iter) {
 		if ((*iter)->m_node == node) {
@@ -132,7 +133,8 @@ void AStarGridGraphSolver::computePath(PathNodeT *path) {
 }
 
 GridGraphSolver::SolveStateT AStarGridGraphSolver::solve() {
-	while(STEPPING == step());
+	while (STEPPING == step())
+		;
 	return m_state;
 }
 
@@ -143,8 +145,7 @@ void AStarGridGraphSolver::render() {
 	renderOpenAndClosedLists();
 
 	//draw path
-	if (m_state == SOLVED)
-	{
+	if (m_state == SOLVED) {
 		glColor3f(0, 1, 0); //pure green
 		std::vector<PathNodeT *>::iterator iter;
 		PathNodeT* from = *m_path.begin();
@@ -160,44 +161,53 @@ void AStarGridGraphSolver::render() {
 void AStarGridGraphSolver::drawPathSegment(GridNode *from, GridNode *to) {
 	glBegin(GL_LINES);
 	//offset to start of maze, then index over by rows, then add offset to center of cell
-	glVertex2f(m_x+ from->getCol()*m_cellWidth + m_offsetX, m_y+ from->getRow()*m_cellHeight + m_offsetY);
-	glVertex2f(m_x+ to->getCol()*m_cellWidth + m_offsetX, m_y+ to->getRow()*m_cellHeight + m_offsetY);
+	glVertex2f(m_x + from->getCol() * m_cellWidth + m_offsetX,
+			m_y + from->getRow() * m_cellHeight + m_offsetY);
+	glVertex2f(m_x + to->getCol() * m_cellWidth + m_offsetX,
+			m_y + to->getRow() * m_cellHeight + m_offsetY);
 	glEnd();
 }
 
 void AStarGridGraphSolver::renderOpenAndClosedLists() {
 	std::list<PathNodeT *>::iterator iter;
 
-
-	glColor3f(0.5f,0.5f,0.5f);
+	glColor3f(0.5f, 0.5f, 0.5f);
 	for (iter = m_closedList.begin(); iter != m_closedList.end(); iter++) {
 		drawListNode(*iter);
+		drawListNodeTail(*iter);
+
 	}
 
-	glColor3f(0.25f,0.75f,0.75f);
+	glColor3f(0.25f, 0.75f, 0.75f);
 	for (iter = m_openList.begin(); iter != m_openList.end(); iter++) {
 		drawListNode(*iter);
-		//drawTail(*iter);
+		drawListNodeTail(*iter);
 	}
 }
 
 void AStarGridGraphSolver::drawListNode(PathNodeT *p) {
-	drawCircle(p->m_node->getCol(),p->m_node->getRow(), m_cellWidth/8);
-
-	//draw tail
-
-//	int deltaX = p->m_parent->m_node->getCol() - p->m_node->getCol();
-//	int deltaY = p->m_parent->m_node->getRow() - p->m_node->getRow();
-//
-//	//center of circle, then offset to edge of circle
-//	int x = (m_x+ p->m_node->getCol()*m_cellWidth + m_offsetX) + deltaX*(m_cellWidth/6);
-//	int y = (m_y+ p->m_node->getRow()*m_cellHeight + m_offsetY) + deltaY*(m_cellWidth/6);
-//
-//	glBegin(GL_LINES);
-//	glVertex2f(x , y ); //starts line on edge of circle
-//	x += deltaX*(m_cellWidth/6);
-//	y += deltaY*(m_cellWidth/6);
-//	glVertex2f(x , y ); //starts line on edge of circle
-//	glEnd();
-	//}
+	drawCircle(p->m_node->getCol(), p->m_node->getRow(), m_cellWidth / 8);
 }
+
+void AStarGridGraphSolver::drawListNodeTail(PathNodeT *p) {
+
+//	draw tail
+	if (p && p->m_parent) {
+		int deltaX = p->m_parent->m_node->getCol() - p->m_node->getCol();
+		int deltaY = p->m_parent->m_node->getRow() - p->m_node->getRow();
+
+		//center of circle, then offset to edge of circle
+		float x = (m_x + p->m_node->getCol() * m_cellWidth + m_offsetX)
+				+ deltaX * (m_cellWidth / 8);
+		float y = (m_y + p->m_node->getRow() * m_cellHeight + m_offsetY)
+				+ deltaY * (m_cellWidth / 8);
+
+		glBegin(GL_LINES);
+		glVertex2f(x, y); //starts line on edge of circle
+		x += deltaX * (m_cellWidth / 6);
+		y += deltaY * (m_cellWidth / 6);
+		glVertex2f(x, y); //starts line on edge of circle
+		glEnd();
+	}
+}
+

@@ -49,6 +49,7 @@ protected:
 	void drawPathSegment(GridNode *from, GridNode *to);
 	void renderOpenAndClosedLists();
 	void drawListNode(PathNodeT *p);
+	void drawListNodeTail(PathNodeT *p);
 };
 
 #endif /* ASTARGRIDGRAPHSOLVER_H_ */

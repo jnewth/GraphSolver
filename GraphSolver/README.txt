@@ -1,3 +1,10 @@
+0.0.5 4/24/12
+
+Features:
+
+Added additional BFS solver called "MyBFSSolver"
+
+
 0.0.4 4/23/12
 J. Newth
 

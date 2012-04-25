@@ -15,8 +15,18 @@ GridGraph* GridFileReader::parseFile(const char *fname) {
     
     //	return simple4();
     //	return snigdha10();
-   return testAStar();
-    //return maze10();
+   //return testAStar();
+    return maze10();
+}
+
+GridGraph* GridFileReader::getMaze(int maze) {
+	switch (maze) {
+	case SIMPLE: return simple4(); break;
+	case MAZE10: return maze10(); break;
+	case SNIGDHA10: return snigdha10(); break;
+	case ASTARTEST: return testAStar(); break;
+	default: return NULL;
+	}
 }
 
 GridGraph* GridFileReader::simple4() {

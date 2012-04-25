@@ -16,7 +16,7 @@
 #include "DFSGridGraphSolver.h"
 #include "BFSGridGraphSolver.h"
 #include "AStarGridGraphSolver.h"
-
+#include "MyBFSGridGraphSolver.h"
 static SDL_Surface *gScreen;
 
 using namespace std;
@@ -98,11 +98,14 @@ static void init(const char *fname)
 	glLoadIdentity();
 
 	//create objects
-	gGraph = GridFileReader::parseFile(fname);
+	gGraph = GridFileReader::getMaze(GridFileReader::ASTARTEST);
 	GridGraphSolverCInfoT solverInfo;
 	solverInfo.graph = gGraph;
+	//solverInfo.from = &gGraph->getNode(0,0); //2,1
+	//solverInfo.to = &gGraph->getNode(9,9);//(2,5);
 	solverInfo.from = &gGraph->getNode(2,1);
 	solverInfo.to = &gGraph->getNode(2,5);
+
 	solverInfo.width = 550; //tell renderer its working area
 	solverInfo.height = 380;
 	solverInfo.xOrigin = 10; //and tell it where it's upper left corner is
@@ -110,10 +113,11 @@ static void init(const char *fname)
 
 	//gSolver = new DFSGridGraphSolver(solverInfo);
 	//gSolver = new BFSGridGraphSolver(solverInfo);
-	gSolver = new AStarGridGraphSolver(solverInfo);
-	//gSolverStringDescription = "Depth-First";
-	//gSolverStringDescription = "Breadth-First";
-	gSolverStringDescription = "A*-star";
+	//gSolver = new AStarGridGraphSolver(solverInfo);
+	gSolver = new MyBFSGridGraphSolver(solverInfo);
+	//gSolverStringDescription = "DFS";
+	gSolverStringDescription = "BFS";
+	//gSolverStringDescription = "A*";
 
 	GridGraphRenderer::GridGraphRendererCInfoT renderInfo;
 	renderInfo.graph = gGraph;

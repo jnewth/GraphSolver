@@ -20,48 +20,48 @@ BFSGridGraphSolver::BFSGridGraphSolver(const GridGraphSolverCInfoT& info) {
 	incrementStepCount();
 }
 
-GridGraphSolver::SolveStateT BFSGridGraphSolver::step() {
-	if  (m_state == STEPPING) {
 
-	}
+
+GridGraphSolver::SolveStateT BFSGridGraphSolver::solve() {
+	while (STEPPING == step());
 	return m_state;
 }
 
-GridGraphSolver::SolveStateT BFSGridGraphSolver::solve() {
-
-	std::list<PathNodeT>::iterator it;
-	for (it=m_list_path.begin(); it != m_list_path.end(); it++) {
-		if ((*it).node == m_finish) {
-			return SOLVED;
-		}
-	}
-
-	for (it=m_list_path.begin(); it != m_list_path.end(); it++) {
-			PathNodeT current = *it;
-			if (current.node->getStatus().compare("waiting") == 0) {
-				std::vector <PathNodeT> m_temp_path;
-				current.node->setStatus("done");
-				current.node->setChildCount(0);
-				for (int dir=0; dir < GridNode::NUM_DIRS; dir++) {
-					if (current.node->containsEdge(dir) && !current.node->getNeighbor(dir)->isVisited()) {
-						PathNodeT next(current.node->getNeighbor(dir));
-						next.node->setVisited(true);
-						next.node->setStatus("waiting");
-						next.node->setParent(current.node);
-						current.node->setChildCount(current.node->getChildCount()+1);
-						m_temp_path.push_back(next);
-						incrementStepCount();
-					}
-				}
-				m_list_path.insert(m_list_path.end(), m_temp_path.begin(), m_temp_path.end());
-				incrementStepCount();
-			}
-		}
-
-	if (SOLVED == this->solve()) {
-		//incrementStepCount();
-		return SOLVED;
-	}
+GridGraphSolver::SolveStateT BFSGridGraphSolver::step() {
+//	if  (m_state == STEPPING) {
+//	std::list<PathNodeT>::iterator it;
+//	for (it=m_list_path.begin(); it != m_list_path.end(); it++) {
+//		if ((*it).node == m_finish) {
+//			m_state = SOLVED;
+//			return m_state;
+//		}
+//	}
+//	incrementStepCount();
+//
+//	for (it=m_list_path.begin(); it != m_list_path.end(); it++) {
+//			PathNodeT current = *it;
+//			if (current.node->getStatus().compare("waiting") == 0) {
+//				std::vector <PathNodeT> m_temp_path;
+//				current.node->setStatus("done");
+//				current.node->setChildCount(0);
+//				for (int dir=0; dir < GridNode::NUM_DIRS; dir++) {
+//					if (current.node->containsEdge(dir) && !current.node->getNeighbor(dir)->isVisited()) {
+//						PathNodeT next(current.node->getNeighbor(dir));
+//						next.node->setVisited(true);
+//						next.node->setStatus("waiting");
+//						next.node->setParent(current.node);
+//						current.node->setChildCount(current.node->getChildCount()+1);
+//						m_temp_path.push_back(next);
+//					}
+//				}
+//				m_list_path.insert(m_list_path.end(), m_temp_path.begin(), m_temp_path.end());
+//			}
+//		}
+//
+//	if (SOLVED == this->solve()) {
+//		//incrementStepCount();
+//		return SOLVED;
+//	}
 	return UNSOLVED;
 }
 
