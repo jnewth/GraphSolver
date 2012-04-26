@@ -46,7 +46,7 @@ GridGraphSolver::SolveStateT MyBFSGridGraphSolver::step() {
 			for (int dir = 0; dir < GridNode::NUM_DIRS; dir++) {
 				if (next->m_node->containsEdge(dir)
 						&& !next->m_node->getNeighbor(dir)->isVisited()) {
-					next->m_node->setVisited(true);
+					next->m_node->getNeighbor(dir)->setVisited(true);
 					children.push_back(
 							new PathNodeT(next,
 									next->m_node->getNeighbor(dir)));

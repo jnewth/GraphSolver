@@ -113,8 +113,8 @@ static void init(const char *fname)
 
 	//gSolver = new DFSGridGraphSolver(solverInfo);
 	//gSolver = new BFSGridGraphSolver(solverInfo);
-	//gSolver = new AStarGridGraphSolver(solverInfo);
-	gSolver = new MyBFSGridGraphSolver(solverInfo);
+	gSolver = new AStarGridGraphSolver(solverInfo);
+	//gSolver = new MyBFSGridGraphSolver(solverInfo);
 	//gSolverStringDescription = "DFS";
 	gSolverStringDescription = "BFS";
 	//gSolverStringDescription = "A*";
