@@ -35,7 +35,7 @@ static int gRasterTextPosY = 10;
 static const char *gSolverStringDescription;
 
 //animation
-static const int STEP_FRAME_COUNT = 45;
+static const int STEP_FRAME_COUNT = 30;
 static bool gDone;
 
 //animation modes

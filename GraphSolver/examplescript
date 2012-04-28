@@ -1,0 +1,29 @@
+#GraphSolver script for various demos
+
+#Set DIR to Debug or Release depending on which executable you want to run
+DIR=Debug
+
+#invocation prototype = GraphSolver [maze] [solver] [animation] [startx] [starty] [finishx] [finishy]
+#Some mnemonics for invocation
+DFS=0
+BFS=1
+ASTAR=2
+ALTBFS=3
+STEP=0
+ANIM=1
+SOLVE=2
+
+#Runs instance of MazeSolver = SIMPLE3 dfs solve 0 0 2 2
+./$DIR/GraphSolver 0 $DFS $ASTAR 0 0 2 2
+
+#Runs instance of MazeSolver = Snigdha altbfs animate 0 0 9 9
+./$DIR/GraphSolver 2 $ALTBFS $ANIM 0 0 9 9
+
+#Runs instance of MazeSolver = Snigdha astar animate 0 0 9 9
+./$DIR/GraphSolver 2 $ASTAR $ANIM 0 0 9 9
+
+#Runs instance of MazeSolver = Snigdha altbfs animate 0 0 9 9
+./$DIR/GraphSolver 1 $ALTBFS $ANIM 0 0 9 9
+
+#Runs instance of MazeSolver = Snigdha astar animate 0 0 9 9
+./$DIR/GraphSolver 1 $ASTAR $STEP 0 0 9 9
