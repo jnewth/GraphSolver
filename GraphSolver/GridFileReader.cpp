@@ -21,7 +21,7 @@ GridGraph* GridFileReader::parseFile(const char *fname) {
 
 GridGraph* GridFileReader::getMaze(int maze) {
 	switch (maze) {
-	case SIMPLE: return simple4(); break;
+	case SIMPLE3: return simple3(); break;
 	case MAZE10: return maze10(); break;
 	case SNIGDHA10: return snigdha10(); break;
 	case ASTARTEST: return testAStar(); break;
@@ -29,7 +29,7 @@ GridGraph* GridFileReader::getMaze(int maze) {
 	}
 }
 
-GridGraph* GridFileReader::simple4() {
+GridGraph* GridFileReader::simple3() {
 	GridGraph *graph = new GridGraph(3, 3);
     
 	graph->addEdge(0, 0, GridNode::EAST);

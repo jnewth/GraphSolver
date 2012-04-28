@@ -17,21 +17,38 @@
 #include "BFSGridGraphSolver.h"
 #include "AStarGridGraphSolver.h"
 #include "MyBFSGridGraphSolver.h"
+
+
 static SDL_Surface *gScreen;
 
 using namespace std;
 
+//solver statics
 static GridGraph *gGraph;
 static GridGraphRenderer *gRenderer;
 static GridGraphSolver *gSolver;
-static bool gDone;
-static bool gStep =false;
-static int gRasterTextPosX = 0;
-static int gRasterTextPosY = 0;
+
+//text draw info
+static int gRasterTextPosX = 570;
+static int gRasterTextPosY = 10;
+
 static const char *gSolverStringDescription;
 
+//animation
 static const int STEP_FRAME_COUNT = 45;
-static void tidyObjects() {
+static bool gDone;
+
+//animation modes
+typedef enum {STEP = 0, ANIMATE, SOLVE};
+static int gAnimationMode = STEP;
+
+//solver modes
+typedef enum {DFS = 0, BFS, ASTAR, ALTBFS};
+
+//button input for stepping
+static bool gStep = false;
+
+static void tidyUpAndExit() {
 	if (gGraph) {
 		delete gGraph;
 	}
@@ -41,6 +58,9 @@ static void tidyObjects() {
 	if (gSolver) {
 		delete gSolver;
 	}
+	SDL_Quit();
+	exit(0);
+
 }
 
 static void initAttributes ()
@@ -81,10 +101,11 @@ static void createSurface (int fullscreen)
 		SDL_Quit();
 		exit(2);
 	}
+
 }
 
-static void init(const char *fname)
-{
+static void initWindow() {
+
 	//set up 2D Perspective
 	SDL_WM_SetCaption("GraphSolver", "GraphSolver");
 	glClearColor(0, 0, 0, 0);
@@ -97,27 +118,78 @@ static void init(const char *fname)
 	glEnable(GL_TEXTURE_2D);
 	glLoadIdentity();
 
+}
+
+static void setSolver(GridGraphSolverCInfoT solverInfo, int solverType) {
+	switch (solverType) {
+	case DFS:
+		gSolver = new DFSGridGraphSolver(solverInfo);
+		gSolverStringDescription = "DFS";
+		break;
+	case BFS:
+		gSolver = new BFSGridGraphSolver(solverInfo);
+		gSolverStringDescription = "BFS";
+		break;
+	case ASTAR:
+		gSolver = new AStarGridGraphSolver(solverInfo);
+		gSolverStringDescription = "A*";
+		break;
+	case ALTBFS:
+		gSolver = new MyBFSGridGraphSolver(solverInfo);
+		gSolverStringDescription = "BFS";
+		break;
+	default:
+		gSolver = NULL;
+		break;
+	}
+}
+
+static void init(int argc, char *argv[])
+{
+	if (argc <= 1) {
+		cout << "Usage: GraphSolver [maze] [solver] [animation] [startx] [starty] [finishx] [finishy]" << endl;
+		cout << "[maze] = 0-3 (different mazes)" << endl;
+		cout << "[solver] = 0=dfs, 1=bfs, 2=astar, 3=altbfs" << endl;
+		cout << "[animation] = 0=step (press 's' to advance), 1 = animate, 2=solve";
+		cout << "x and y fields specify where in the maze to start and end" << endl;
+		tidyUpAndExit(); //GraphSolver 0 2 0 0 0 2 2
+	}
+	// Init SDL video subsystem
+	if ( SDL_Init (SDL_INIT_VIDEO) < 0 ) {
+
+        fprintf(stderr, "Couldn't initialize SDL: %s\n",
+			SDL_GetError());
+		exit(1);
+	}
+    // Set GL context attributes
+    initAttributes();
+
+    // Create GL context
+    createSurface(0);
+
+	initWindow();
+
+	cout << "Maze type" << argv[1] << endl;;
+	gGraph = GridFileReader::getMaze(atoi(argv[1])); //will be null if bad number is passed in
+	int solverType = atoi(argv[2]);
+	gAnimationMode = atoi(argv[3]);
+
 	//create objects
-	gGraph = GridFileReader::getMaze(GridFileReader::ASTARTEST);
 	GridGraphSolverCInfoT solverInfo;
 	solverInfo.graph = gGraph;
-	//solverInfo.from = &gGraph->getNode(0,0); //2,1
-	//solverInfo.to = &gGraph->getNode(9,9);//(2,5);
-	solverInfo.from = &gGraph->getNode(2,1);
-	solverInfo.to = &gGraph->getNode(2,5);
+	cout << "To: " << argv[4] << ", " << argv[5] << endl;
+ 	solverInfo.from = &gGraph->getNode(atoi(argv[4]), atoi(argv[5]));
+	cout << "From: " << argv[6] << ", " << argv[7] << endl;
 
+	solverInfo.to = &gGraph->getNode(atoi(argv[6]), atoi(argv[7]));
+
+	//graphics settings
 	solverInfo.width = 550; //tell renderer its working area
 	solverInfo.height = 380;
 	solverInfo.xOrigin = 10; //and tell it where it's upper left corner is
 	solverInfo.yOrigin = 10;
 
-	//gSolver = new DFSGridGraphSolver(solverInfo);
-	//gSolver = new BFSGridGraphSolver(solverInfo);
-	gSolver = new AStarGridGraphSolver(solverInfo);
-	//gSolver = new MyBFSGridGraphSolver(solverInfo);
-	//gSolverStringDescription = "DFS";
-	gSolverStringDescription = "BFS";
-	//gSolverStringDescription = "A*";
+	setSolver(solverInfo, solverType);
 
 	GridGraphRenderer::GridGraphRendererCInfoT renderInfo;
 	renderInfo.graph = gGraph;
@@ -126,25 +198,27 @@ static void init(const char *fname)
 	renderInfo.xOrigin = solverInfo.xOrigin; //and tell it where it's upper left corner is
 	renderInfo.yOrigin = solverInfo.yOrigin;
 	gRenderer = new GridGraphRenderer(renderInfo);
-
-	gRasterTextPosX = 570;
-	gRasterTextPosY = 10;
-
-	//debugging only
-	//gSolver->solve();
 }
 
 static void update() {
 	static int updateCounter = STEP_FRAME_COUNT;
-//	if (!updateCounter--) {
-//		gSolver->step();
-//		updateCounter = STEP_FRAME_COUNT;
-//	}
 
-	//or use manual stepping
-	if (gStep) {
-		gSolver->step();
-		gStep=false;
+	switch (gAnimationMode) {
+	case SOLVE:
+		gSolver->solve();
+		break;
+	case ANIMATE:
+		if (!updateCounter--) {
+			gSolver->step();
+			updateCounter = STEP_FRAME_COUNT;
+		}
+		break;
+	case STEP:
+		if (gStep) {
+			gSolver->step();
+			gStep = false;
+		}
+		break;
 	}
 }
 
@@ -248,40 +322,34 @@ static void mainLoop ()
 	}
 }
 
+
+//add command line args:
+//1 maze
+//2 solver
+//3 step, solve, animate
 int main(int argc, char *argv[])
 {
-	// Init SDL video subsystem
-	if ( SDL_Init (SDL_INIT_VIDEO) < 0 ) {
-		
-        fprintf(stderr, "Couldn't initialize SDL: %s\n",
-			SDL_GetError());
-		exit(1);
-	}
+
+	//Setup info;
+
+
 
 	//run some unit tests
 	GridNode::test();
 	GridGraph::test();
-
-    // Set GL context attributes
-    initAttributes();
-    
-    // Create GL context
-    createSurface(0);
     
     // Get GL context attributes
 
     // Init GL state
     //could get a file name and pass in here
 
-    init(NULL);
+    init(argc, argv);
     
     // Draw, get events...
     mainLoop();
     
     // Cleanup
-    tidyObjects();
+    tidyUpAndExit();
 
-	SDL_Quit();
-	
     return 0;
 }

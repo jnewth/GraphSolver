@@ -1,3 +1,12 @@
+0.0.6 4/27/12
+
+Features
+Added command line invocation. Can call solver based on command line parameters. See main.cpp for details.
+
+Bugs:
+Some bad flickering when rendering multiple different maze and solvers simultaneously. 
+
+
 0.0.5 4/24/12
 
 Features:
