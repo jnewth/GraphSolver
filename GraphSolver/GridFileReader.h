@@ -22,7 +22,9 @@ private:
 	static GridGraph* simple3();
 	static GridGraph* testAStar();
     static GridGraph* maze10();
-    
+    static GridGraph* maze2_10();
+    static GridGraph* maze3_10();
+    static GridGraph* maze4_10();
 };
 
 #endif /* GRIDFILEREADER_H_ */

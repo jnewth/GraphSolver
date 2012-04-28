@@ -273,16 +273,16 @@ static void mainLoop ()
     
 	//We need to write a real file parser to define graphs and then pass them in to our solver
 	std::string fname = "null";
-
-
+    
+    
 	std::cout << "Graph is:" << std::endl << *gGraph << std::endl;
-
+    
     while ( !gDone ) {
-
+        
 		/* Check for events */
 		while ( SDL_PollEvent (&event) ) {
 			switch (event.type) {
-
+                    
 				case SDL_MOUSEMOTION:
 					break;
 				case SDL_MOUSEBUTTONDOWN:
@@ -298,13 +298,13 @@ static void mainLoop ()
 					break;
 			}
 		}
-    
+        
         //     This approach is not normally recommended - it is better to
         //     use time-based animation and run as fast as possible
 		update();
         drawGL();
         SDL_GL_SwapBuffers();
-
+        
         // Time how long each draw-swap-delay cycle takes
         // and adjust delay to get closer to target framerate
         if (thenTicks > 0) {
@@ -317,7 +317,7 @@ static void mainLoop ()
         else {
             thenTicks = SDL_GetTicks ();
         }
-
+        
         SDL_Delay (delay);
 	}
 }
@@ -339,7 +339,7 @@ int main(int argc, char *argv[])
 	GridGraph::test();
     
     // Get GL context attributes
-
+    
     // Init GL state
     //could get a file name and pass in here
 
