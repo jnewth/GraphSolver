@@ -1,12 +1,13 @@
-0.0.6 4/27/12
+0.0.6 4/28/12
 
-Features
-Added command line invocation. Can call solver based on command line parameters. See main.cpp for details.
+Added 't' to terminate (ie solve) a stepping maze
+Added improved command line invocation. Everything should be run from script.
+BFS and ALTBFS appear to work the same
+New mazes added.
 
 Bugs:
-Some bad flickering when rendering multiple different maze and solvers simultaneously. 
-
-
+Still see bad flickering when rendering multiple different maze and solvers simultaneously. 
+Not just a framerate issue
 0.0.5 4/24/12
 
 Features:

@@ -24,7 +24,6 @@ public:
 	virtual ~BFSGridGraphSolver();
     
 protected:
-	typedef enum {LIST_A, LIST_B};
 	int currentList;
 	void drawPathSegment(GridNode *from, GridNode *to);
     

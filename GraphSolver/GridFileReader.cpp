@@ -9,30 +9,25 @@
 #include "GridGraph.h"
 #include "GridNode.h"
 
-//This should parse a file and generate a maze.
-//For now, just generate a simple maze for getting all the parts working
+//NOT IMPLEMENTED YET
 GridGraph* GridFileReader::parseFile(const char *fname) {
-    
-    //	return simple4();
-    //  return snigdha10();
-    //  return testAStar();
-    //  return maze10();
-    //  return maze2_10();
-    //  return maze3_10();
-    return maze4_10();
+	return NULL;
 }
 
 GridGraph* GridFileReader::getMaze(int maze) {
 	switch (maze) {
-        case SIMPLE: return simple4(); break;
+        case SIMPLE3: return simple3(); break;
         case MAZE10: return maze10(); break;
         case SNIGDHA10: return snigdha10(); break;
         case ASTARTEST: return testAStar(); break;
+        case MAZE2_10: return maze2_10(); break;
+        case MAZE3_10: return maze3_10(); break;
+        case MAZE4_10: return maze4_10(); break;
         default: return NULL;
 	}
 }
 
-GridGraph* GridFileReader::simple4() {
+GridGraph* GridFileReader::simple3() {
 	GridGraph *graph = new GridGraph(3, 3);
     
 	graph->addEdge(0, 0, GridNode::EAST);

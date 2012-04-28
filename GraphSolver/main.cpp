@@ -136,7 +136,7 @@ static void setSolver(GridGraphSolverCInfoT solverInfo, int solverType) {
 		break;
 	case ALTBFS:
 		gSolver = new MyBFSGridGraphSolver(solverInfo);
-		gSolverStringDescription = "BFS";
+		gSolverStringDescription = "ALTBFS";
 		break;
 	default:
 		gSolver = NULL;
@@ -148,11 +148,11 @@ static void init(int argc, char *argv[])
 {
 	if (argc <= 1) {
 		cout << "Usage: GraphSolver [maze] [solver] [animation] [startx] [starty] [finishx] [finishy]" << endl;
-		cout << "[maze] = 0-3 (different mazes)" << endl;
+		cout << "[maze] = 0-" << (GridFileReader::NUM_MAZES-1) << " (different mazes)" << endl;
 		cout << "[solver] = 0=dfs, 1=bfs, 2=astar, 3=altbfs" << endl;
 		cout << "[animation] = 0=step (press 's' to advance), 1 = animate, 2=solve";
 		cout << "x and y fields specify where in the maze to start and end" << endl;
-		tidyUpAndExit(); //GraphSolver 0 2 0 0 0 2 2
+		tidyUpAndExit();
 	}
 	// Init SDL video subsystem
 	if ( SDL_Init (SDL_INIT_VIDEO) < 0 ) {
@@ -169,9 +169,10 @@ static void init(int argc, char *argv[])
 
 	initWindow();
 
-	cout << "Maze type" << argv[1] << endl;;
+	cout << "Maze type is " << argv[1] << endl;;
 	gGraph = GridFileReader::getMaze(atoi(argv[1])); //will be null if bad number is passed in
 	int solverType = atoi(argv[2]);
+	cout << "Solver type is " << argv[2] << endl;
 	gAnimationMode = atoi(argv[3]);
 
 	//create objects
@@ -260,6 +261,9 @@ static void handleKey(SDLKey key) {
 	if (key == SDLK_s) {
 		gStep = true;
 	}
+	if (key == SDLK_t) {
+		gAnimationMode = SOLVE;
+	}
 }
 
 static void mainLoop ()
@@ -330,19 +334,11 @@ static void mainLoop ()
 int main(int argc, char *argv[])
 {
 
-	//Setup info;
-
-
-
 	//run some unit tests
 	GridNode::test();
 	GridGraph::test();
     
-    // Get GL context attributes
-    
-    // Init GL state
-    //could get a file name and pass in here
-
+	//sets up everything
     init(argc, argv);
     
     // Draw, get events...

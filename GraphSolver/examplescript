@@ -12,18 +12,35 @@ ALTBFS=3
 STEP=0
 ANIM=1
 SOLVE=2
+SIMPLE3=0
+SNIGDHA10=1
+ASTARTEST=2 
+MAZE10=3
+MAZE2_10=4 
+MAZE3_10=5 
+MAZE4_10=6
 
 #Runs instance of MazeSolver = SIMPLE3 dfs solve 0 0 2 2
-./$DIR/GraphSolver 0 $DFS $ASTAR 0 0 2 2
+#./$DIR/GraphSolver $SIMPLE3 $DFS $ASTAR 0 0 2 2
+
+#Runs instance of MazeSolver = Maze10 altbfs animate 0 0 9 9
+#./$DIR/GraphSolver $MAZE10 $ALTBFS $ANIM 0 0 9 9
+
+#Runs instance of MazeSolver = Maze10 astar animate 0 0 9 9
+#./$DIR/GraphSolver $MAZE10 $ASTAR $ANIM 0 0 9 9
 
 #Runs instance of MazeSolver = Snigdha altbfs animate 0 0 9 9
-./$DIR/GraphSolver 2 $ALTBFS $ANIM 0 0 9 9
+#./$DIR/GraphSolver $SNIGDHA10 $ALTBFS $ANIM 0 0 9 9
 
 #Runs instance of MazeSolver = Snigdha astar animate 0 0 9 9
-./$DIR/GraphSolver 2 $ASTAR $ANIM 0 0 9 9
+#./$DIR/GraphSolver $SNIGDHA10 $ASTAR $STEP 0 0 9 9
 
-#Runs instance of MazeSolver = Snigdha altbfs animate 0 0 9 9
-./$DIR/GraphSolver 1 $ALTBFS $ANIM 0 0 9 9
+#Solve new mazes
+./$DIR/GraphSolver $MAZE2_10 $ASTAR $SOLVE 0 0 9 9
+./$DIR/GraphSolver $MAZE3_10 $ASTAR $SOLVE 0 0 9 9
+./$DIR/GraphSolver $MAZE4_10 $ASTAR $SOLVE 0 0 9 9
 
-#Runs instance of MazeSolver = Snigdha astar animate 0 0 9 9
-./$DIR/GraphSolver 1 $ASTAR $STEP 0 0 9 9
+./$DIR/GraphSolver $MAZE4_10 $ALTBFS $STEP 0 0 9 9
+./$DIR/GraphSolver $MAZE4_10 $BFS $STEP 0 0 9 9
+
+

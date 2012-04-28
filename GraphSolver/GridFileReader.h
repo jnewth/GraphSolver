@@ -12,8 +12,8 @@
 
 class GridFileReader {
 public:
-	typedef enum MazeTypeT {SIMPLE3, MAZE10, SNIGDHA10, ASTARTEST};
-	static const int NUM_MAZES = 4;
+	typedef enum MazeTypeT {SIMPLE3, SNIGDHA10, ASTARTEST, MAZE10, MAZE2_10, MAZE3_10, MAZE4_10 };
+	static const int NUM_MAZES = 8;
 	static GridGraph* parseFile(const char *fname);
 	static GridGraph* getMaze(int maze);
 

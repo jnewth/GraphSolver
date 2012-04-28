@@ -20,7 +20,6 @@ public:
 	virtual void render();
 
 protected:
-	typedef enum {LIST_A, LIST_B};
 	int currentList;
 	//My path node type
 	typedef struct PathNodeT {
