@@ -21,7 +21,6 @@ GridGraphRenderer::GridGraphRenderer(const GridGraphRendererCInfoT& info) :
 	m_cellHeight = (m_height) / m_graph->getNumRows();
 	m_widthOffset = m_cellWidth/2;
 	m_heightOffset = m_cellHeight/2;
-
 }
 
 
@@ -34,10 +33,7 @@ void GridGraphRenderer::render() {
 			drawCell(row, col);
 		}
 	}
-
 }
-
-
 
 //some shitty hack-fu
 #define WALL_COLOR 1,0,0 //pure red

@@ -147,7 +147,7 @@ static void setSolver(GridGraphSolverCInfoT solverInfo, int solverType) {
 static void init(int argc, char *argv[])
 {
 	if (argc <= 1) {
-		cout << "Usage: GraphSolver [maze] [solver] [animation] [startx] [starty] [finishx] [finishy]" << endl;
+		cout << "Usage: GraphSolver [maze] [solver] [animation] [starty] [startx] [finishy] [finishx]" << endl;
 		cout << "[maze] = 0-" << (GridFileReader::NUM_MAZES-1) << " (different mazes)" << endl;
 		cout << "[solver] = 0=dfs, 1=bfs, 2=astar, 3=altbfs" << endl;
 		cout << "[animation] = 0=step (press 's' to advance), 1 = animate, 2=solve";
@@ -171,6 +171,8 @@ static void init(int argc, char *argv[])
 
 	cout << "Maze type is " << argv[1] << endl;;
 	gGraph = GridFileReader::getMaze(atoi(argv[1])); //will be null if bad number is passed in
+	std::cout << "Graph is:" << std::endl << *gGraph << std::endl;
+
 	int solverType = atoi(argv[2]);
 	cout << "Solver type is " << argv[2] << endl;
 	gAnimationMode = atoi(argv[3]);
@@ -226,7 +228,6 @@ static void update() {
 static void drawStats() {
 	int lineDelta = 15;
 	const char *cStr = gSolverStringDescription;
-
 	glRasterPos2f(gRasterTextPosX, gRasterTextPosY);
 	while(*cStr) {
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *cStr++);
@@ -278,9 +279,7 @@ static void mainLoop ()
 	//We need to write a real file parser to define graphs and then pass them in to our solver
 	std::string fname = "null";
     
-    
-	std::cout << "Graph is:" << std::endl << *gGraph << std::endl;
-    
+
     while ( !gDone ) {
         
 		/* Check for events */
