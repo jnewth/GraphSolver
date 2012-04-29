@@ -265,6 +265,9 @@ static void handleKey(SDLKey key) {
 	if (key == SDLK_t) {
 		gAnimationMode = SOLVE;
 	}
+	if (key == SDLK_d) {
+		gSolver->setDrawScore(!(gSolver->getDrawScore()));
+	}
 }
 
 static void mainLoop ()

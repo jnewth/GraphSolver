@@ -25,9 +25,11 @@ protected:
 	typedef struct PathNodeT {
 		PathNodeT *m_parent; //starts at 0, when = NUM_DIRS, the node can be popped
 		GridNode *m_node;
-		PathNodeT(PathNodeT *parent, GridNode *n) : m_parent(parent), m_node(n) {}
+		int m_generation;
+		PathNodeT(PathNodeT *parent, GridNode *n, int gen) : m_parent(parent), m_node(n), m_generation(gen) {}
 	} PathNodeT;
 
+	virtual void drawGeneration(PathNodeT *p);
 	virtual void computePath(PathNodeT* end);
 
 	std::list<PathNodeT *> m_openList; //we fill one while we pop the other

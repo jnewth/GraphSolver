@@ -50,6 +50,8 @@ protected:
 	void renderOpenAndClosedLists();
 	void drawListNode(PathNodeT *p);
 	void drawListNodeTail(PathNodeT *p);
+	void drawStats(PathNodeT *p);
+
 };
 
 #endif /* ASTARGRIDGRAPHSOLVER_H_ */

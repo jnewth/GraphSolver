@@ -9,7 +9,8 @@
 #include <math.h>
 #include <assert.h>
 #include <gl.h>
-
+#include <sstream>
+#include <glut.h>
 AStarGridGraphSolver::AStarGridGraphSolver(const GridGraphSolverCInfoT& info) {
 	init(info);
 	PathNodeT *p = new PathNodeT(NULL, m_start, 0,
@@ -158,6 +159,51 @@ void AStarGridGraphSolver::render() {
 	renderFinish();
 }
 
+void AStarGridGraphSolver::drawStats(PathNodeT *p) {
+
+	if (!m_drawScore) { return; }
+	std::stringstream count;
+	count << p->getScore();
+	std::string temp = count.str();
+	const char *cStr = temp.c_str();
+
+	glRasterPos2f(
+			(float) (m_x + p->m_node->getCol() * m_cellWidth + m_offsetX - m_cellWidth/3),
+			(float) (m_y + p->m_node->getRow() * m_cellHeight
+					+ m_offsetY -m_cellHeight/3));
+	while (*cStr) {
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *cStr++);
+	}
+
+	count.str(""); //empty
+	count << p->m_G;
+	temp = count.str();
+	cStr = temp.c_str();
+
+	glRasterPos2f(
+			(float) (m_x + p->m_node->getCol() * m_cellWidth + m_offsetX - m_cellWidth/3),
+			(float) (m_y + p->m_node->getRow() * m_cellHeight
+					+ m_offsetY + m_cellHeight/3));
+	while (*cStr) {
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *cStr++);
+	}
+	count.str("");
+	count << p->m_H;
+	temp = count.str();
+	cStr = temp.c_str();
+
+	glRasterPos2f(
+			(float) (m_x + p->m_node->getCol() * m_cellWidth + m_offsetX + m_cellWidth/3),
+			(float) (m_y + p->m_node->getRow() * m_cellHeight
+					+ m_offsetY + m_cellHeight/3));
+	while (*cStr) {
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *cStr++);
+	}
+
+
+}
+
+
 void AStarGridGraphSolver::drawPathSegment(GridNode *from, GridNode *to) {
 	glBegin(GL_LINES);
 	//offset to start of maze, then index over by rows, then add offset to center of cell
@@ -173,6 +219,7 @@ void AStarGridGraphSolver::renderOpenAndClosedLists() {
 
 	glColor3f(0.5f, 0.5f, 0.5f);
 	for (iter = m_closedList.begin(); iter != m_closedList.end(); iter++) {
+		drawStats(*iter);
 		drawListNode(*iter);
 		drawListNodeTail(*iter);
 
@@ -180,6 +227,7 @@ void AStarGridGraphSolver::renderOpenAndClosedLists() {
 
 	glColor3f(0.25f, 0.75f, 0.75f);
 	for (iter = m_openList.begin(); iter != m_openList.end(); iter++) {
+		drawStats(*iter);
 		drawListNode(*iter);
 		drawListNodeTail(*iter);
 	}

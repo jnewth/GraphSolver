@@ -8,9 +8,12 @@
 #include "MyBFSGridGraphSolver.h"
 #include <assert.h>
 #include <gl.h>
+#include <glut.h>
+#include <sstream>
+
 MyBFSGridGraphSolver::MyBFSGridGraphSolver(const GridGraphSolverCInfoT& info) {
 	init(info);
-	PathNodeT *p = new PathNodeT(NULL, m_start); //generally H is cost of parent node + 1
+	PathNodeT *p = new PathNodeT(NULL, m_start, 0); //generally H is cost of parent node + 1
 	m_start->setVisited(true);
 	m_openList.push_front(p);
 	incrementStepCount();
@@ -49,7 +52,7 @@ GridGraphSolver::SolveStateT MyBFSGridGraphSolver::step() {
 					next->m_node->getNeighbor(dir)->setVisited(true);
 					children.push_back(
 							new PathNodeT(next,
-									next->m_node->getNeighbor(dir)));
+									next->m_node->getNeighbor(dir), next->m_generation+1));
 				}
 			}
 		}
@@ -101,7 +104,11 @@ void MyBFSGridGraphSolver::renderOpenAndClosedLists() {
 	std::list<PathNodeT *>::iterator iter;
 
 	glColor3f(0.5f, 0.5f, 0.5f);
+
+
+
 	for (iter = m_closedList.begin(); iter != m_closedList.end(); iter++) {
+		drawGeneration(*iter);
 		drawListNode(*iter);
 		drawListNodeTail(*iter);
 
@@ -109,8 +116,27 @@ void MyBFSGridGraphSolver::renderOpenAndClosedLists() {
 
 	glColor3f(0.25f, 0.75f, 0.75f);
 	for (iter = m_openList.begin(); iter != m_openList.end(); iter++) {
+		drawGeneration(*iter);
 		drawListNode(*iter);
 		drawListNodeTail(*iter);
+	}
+}
+
+void MyBFSGridGraphSolver::drawGeneration(PathNodeT *p) {
+
+	if (!m_drawScore) { return; }
+
+	std::stringstream count;
+	count << p->m_generation;
+	std::string temp = count.str();
+	const char *cStr = temp.c_str();
+
+	glRasterPos2f(
+			(float) (m_x + p->m_node->getCol() * m_cellWidth + m_offsetX - m_cellWidth/3),
+			(float) (m_y + p->m_node->getRow() * m_cellHeight
+					+ m_offsetY -m_cellHeight/3));
+	while (*cStr) {
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *cStr++);
 	}
 }
 

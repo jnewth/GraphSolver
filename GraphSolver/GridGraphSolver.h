@@ -36,6 +36,7 @@ public:
 		m_offsetY = m_cellHeight/2;
 		m_stepCount = 0; //tracks # of "steps" to solution (every path addition or removal)
 		m_state = STEPPING;
+		m_drawScore = false;
 	}
 
 	virtual SolveStateT step() = 0;
@@ -50,6 +51,9 @@ public:
 	virtual void renderFinish();
 	virtual void drawCircle(int x, int y, int radius);
 
+	virtual void setDrawScore(bool b) { m_drawScore = b; }
+	virtual bool getDrawScore() { return m_drawScore; }
+
 
 	virtual ~GridGraphSolver() {};
 
@@ -61,6 +65,7 @@ protected:
 	int m_stepCount;
 	//rendering information should not be here but in the interests of time Ive put them here
 	int m_x, m_y, m_cellWidth, m_cellHeight, m_offsetX, m_offsetY;
+	bool m_drawScore;
 };
 
 #endif /* GRAPHSOLVER_H_ */
