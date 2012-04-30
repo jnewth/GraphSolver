@@ -3,7 +3,7 @@
 #Set DIR to Debug or Release depending on which executable you want to run
 DIR=Debug
 
-#invocation prototype = GraphSolver [maze] [solver] [animation] [startx] [starty] [finishx] [finishy]
+#invocation prototype = GraphSolver [maze] [solver] [animation] [start row] [start col] [finish row] [finish col]
 #Some mnemonics for invocation
 DFS=0
 BFS=1

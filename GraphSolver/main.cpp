@@ -147,11 +147,10 @@ static void setSolver(GridGraphSolverCInfoT solverInfo, int solverType) {
 static void init(int argc, char *argv[])
 {
 	if (argc <= 1) {
-		cout << "Usage: GraphSolver [maze] [solver] [animation] [starty] [startx] [finishy] [finishx]" << endl;
+		cout << "Usage: GraphSolver [maze] [solver] [animation] [start row] [start col] [finish row] [finish col]" << endl;
 		cout << "[maze] = 0-" << (GridFileReader::NUM_MAZES-1) << " (different mazes)" << endl;
 		cout << "[solver] = 0=dfs, 1=bfs, 2=astar, 3=altbfs" << endl;
 		cout << "[animation] = 0=step (press 's' to advance), 1 = animate, 2=solve";
-		cout << "x and y fields specify where in the maze to start and end" << endl;
 		cout << "Type escape to quit application at any time." << endl;
 		cout << "Type 's' to step the solver." << endl;
 		cout << "Type 't' to immediately solve the maze." << endl;
