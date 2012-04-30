@@ -20,6 +20,9 @@ MAZE2_10=4
 MAZE3_10=5 
 MAZE4_10=6
 
+#Get command information
+./$DIR/GraphSolver
+
 #Runs instance of MazeSolver = SIMPLE3 dfs solve 0 0 2 2
 ./$DIR/GraphSolver $SIMPLE3 $DFS $ASTAR 0 0 2 2
 
@@ -42,5 +45,12 @@ MAZE4_10=6
 
 ./$DIR/GraphSolver $MAZE4_10 $ALTBFS $STEP 0 0 9 9
 ./$DIR/GraphSolver $MAZE4_10 $BFS $STEP 0 0 9 9
+
+
+#Runs instance of MazeSolver = Maze10 astar animate 0 0 9 9
+./$DIR/GraphSolver $MAZE10 $ASTAR $STEP 0 0 9 9
+
+./$DIR/GraphSolver $ASTARTEST $ALTBFS $STEP 2 1 2 5
+./$DIR/GraphSolver $ASTARTEST $ASTAR $STEP 2 1 2 5
 
 

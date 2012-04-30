@@ -1,3 +1,14 @@
+1.0.0 4/29/12
+
+Features:
+Release for submission to professor.
+Added 'd' to toggle rendering of node cost information for altbfs and a* solvers.
+New mazes added.
+
+Bugs:
+Occasional flickering
+
+
 0.0.6 4/28/12
 
 Added 't' to terminate (ie solve) a stepping maze

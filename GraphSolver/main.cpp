@@ -152,6 +152,11 @@ static void init(int argc, char *argv[])
 		cout << "[solver] = 0=dfs, 1=bfs, 2=astar, 3=altbfs" << endl;
 		cout << "[animation] = 0=step (press 's' to advance), 1 = animate, 2=solve";
 		cout << "x and y fields specify where in the maze to start and end" << endl;
+		cout << "Type escape to quit application at any time." << endl;
+		cout << "Type 's' to step the solver." << endl;
+		cout << "Type 't' to immediately solve the maze." << endl;
+		cout << "Type 'd' to toggle node cost information rendering for altbfs and A* solvers." <<endl;
+
 		tidyUpAndExit();
 	}
 	// Init SDL video subsystem
