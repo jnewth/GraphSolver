@@ -35,7 +35,10 @@ static int gRasterTextPosY = 10;
 static const char *gSolverStringDescription;
 
 //animation
-static const int STEP_FRAME_COUNT = 30;
+static const int ANIM_RATE_MAX = 60;
+static const int ANIM_RATE_MIN = 1;
+static const int ANIM_RATE_ADJUST = 10;
+static int gFramesLeft = 30;
 static bool gDone;
 
 //animation modes
@@ -147,11 +150,13 @@ static void setSolver(GridGraphSolverCInfoT solverInfo, int solverType) {
 static void init(int argc, char *argv[])
 {
 	if (argc <= 1) {
-		cout << "Usage: GraphSolver [maze] [solver] [animation] [start row] [start col] [finish row] [finish col]" << endl;
+		cout << "Usage: GraphSolver [maze] [solver] [start row] [start col] [finish row] [finish col]" << endl;
 		cout << "[maze] = 0-" << (GridFileReader::NUM_MAZES-1) << " (different mazes)" << endl;
 		cout << "[solver] = 0=dfs, 1=bfs, 2=astar, 3=altbfs" << endl;
-		cout << "[animation] = 0=step (press 's' to advance), 1 = animate, 2=solve";
+		cout << "Always starts paused." << endl;
 		cout << "Type escape to quit application at any time." << endl;
+		cout << "Type 'a' to animate the solver." << endl;
+		cout << "Type 'z'/'x' to animate faster or slower." << endl;
 		cout << "Type 's' to step the solver." << endl;
 		cout << "Type 't' to immediately solve the maze." << endl;
 		cout << "Type 'd' to toggle node cost information rendering for altbfs and A* solvers." <<endl;
@@ -179,16 +184,16 @@ static void init(int argc, char *argv[])
 
 	int solverType = atoi(argv[2]);
 	cout << "Solver type is " << argv[2] << endl;
-	gAnimationMode = atoi(argv[3]);
+	gAnimationMode = STEP;
 
 	//create objects
 	GridGraphSolverCInfoT solverInfo;
 	solverInfo.graph = gGraph;
-	cout << "To: " << argv[4] << ", " << argv[5] << endl;
- 	solverInfo.from = &gGraph->getNode(atoi(argv[4]), atoi(argv[5]));
-	cout << "From: " << argv[6] << ", " << argv[7] << endl;
+	cout << "To: " << argv[3] << ", " << argv[4] << endl;
+ 	solverInfo.from = &gGraph->getNode(atoi(argv[3]), atoi(argv[4]));
+	cout << "From: " << argv[5] << ", " << argv[6] << endl;
 
-	solverInfo.to = &gGraph->getNode(atoi(argv[6]), atoi(argv[7]));
+	solverInfo.to = &gGraph->getNode(atoi(argv[5]), atoi(argv[6]));
 
 	//graphics settings
 	solverInfo.width = 550; //tell renderer its working area
@@ -208,7 +213,7 @@ static void init(int argc, char *argv[])
 }
 
 static void update() {
-	static int updateCounter = STEP_FRAME_COUNT;
+	static int updateCounter = gFramesLeft;
 
 	switch (gAnimationMode) {
 	case SOLVE:
@@ -217,7 +222,7 @@ static void update() {
 	case ANIMATE:
 		if (!updateCounter--) {
 			gSolver->step();
-			updateCounter = STEP_FRAME_COUNT;
+			updateCounter = gFramesLeft;
 		}
 		break;
 	case STEP:
@@ -260,17 +265,31 @@ static void drawGL ()
 }
 
 static void handleKey(SDLKey key) {
+	//end
 	if (key == SDLK_ESCAPE) {
 		gDone = true;
 	}
+	//animation mode
 	if (key == SDLK_s) {
+		gAnimationMode = STEP;
 		gStep = true;
+	}
+	if (key == SDLK_a) {
+		gAnimationMode = ANIMATE;
 	}
 	if (key == SDLK_t) {
 		gAnimationMode = SOLVE;
 	}
 	if (key == SDLK_d) {
-		gSolver->setDrawScore(!(gSolver->getDrawScore()));
+		gSolver->drawNodeCost(!(gSolver->getNodeCost()));
+	}
+	if (key == SDLK_z) {
+		gFramesLeft += ANIM_RATE_ADJUST;
+		if (gFramesLeft > ANIM_RATE_MAX) { gFramesLeft = ANIM_RATE_MAX; }
+	}
+	if (key == SDLK_x) {
+		gFramesLeft -= ANIM_RATE_ADJUST;
+		if (gFramesLeft < ANIM_RATE_MIN) { gFramesLeft = ANIM_RATE_MIN; }
 	}
 }
 

@@ -51,8 +51,8 @@ public:
 	virtual void renderFinish();
 	virtual void drawCircle(int x, int y, int radius);
 
-	virtual void setDrawScore(bool b) { m_drawScore = b; }
-	virtual bool getDrawScore() { return m_drawScore; }
+	virtual void drawNodeCost(bool b) { m_drawScore = b; }
+	virtual bool getNodeCost() { return m_drawScore; }
 
 
 	virtual ~GridGraphSolver() {};
