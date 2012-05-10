@@ -111,7 +111,8 @@ static void initWindow() {
 
 	//set up 2D Perspective
 	SDL_WM_SetCaption("GraphSolver", "GraphSolver");
-	glClearColor(0, 0, 0, 0);
+	glClearColor(0,0,0,0);
+	//glClearColor(1,1,1, 0);
 	glClearDepth(1.0f);
 	glViewport(0, 0, 640, 480);
 	glMatrixMode(GL_PROJECTION); //prevents Z from affecting anything.
